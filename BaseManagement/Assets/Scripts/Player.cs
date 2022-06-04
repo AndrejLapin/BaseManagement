@@ -103,6 +103,7 @@ public class Player : MonoBehaviour
                     pickupList.Remove(currentGadget);
                     currentGadget.transform.parent = hands.transform;
                     currentGadget.transform.position = hands.transform.position;
+                    currentGadget.transform.rotation = hands.transform.rotation;
 
                     foreach (Gadget gadget in pickupList)
                     {
