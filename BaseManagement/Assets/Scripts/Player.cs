@@ -7,10 +7,13 @@ public class Player : MonoBehaviour
     [SerializeField] float maxMoveSpeed = 2.5f;
     [SerializeField] float acceleration = 0.8f;
     [SerializeField] GameObject characterBody;
+    [SerializeField] GameObject hands;
     CharacterState myState;
     float moveSpeed = 0f;
     Camera myCamera;
     Rigidbody myRigidBody;
+    Gadget currentGadget = null;
+    List<Gadget> pickupList = new List<Gadget>();
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +26,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         Move();
+        Pickup();
     }
 
     void Move()
@@ -84,5 +88,51 @@ public class Player : MonoBehaviour
     {
         float rotationTargetAngle = Vector3.Angle(Vector3.forward, playerVelocity) * Mathf.Sign(playerVelocity.x);
         characterBody.transform.rotation = Quaternion.Euler(0, rotationTargetAngle, 0);
+    }
+
+    void Pickup()
+    {
+        if(Input.GetButtonDown(InputName.PICKUP))
+        {
+            if(CanPickup())
+            {
+                if(pickupList.Count > 0 && pickupList[0])
+                {
+                    currentGadget = pickupList[0];
+                    currentGadget.Pickup();
+                    pickupList.Remove(currentGadget);
+                    currentGadget.transform.parent = hands.transform;
+                    currentGadget.transform.position = hands.transform.position;
+
+                    foreach (Gadget gadget in pickupList)
+                    {
+                        // remove this candidate
+                        gadget.RemoveCandidate(this);
+                    }
+                    pickupList.Clear();
+                }
+            }
+            else // drop
+            {
+                currentGadget.transform.parent = null;
+                currentGadget.Drop();
+                currentGadget = null;
+            }
+        }
+    }
+
+    public void AddToPickupList(Gadget gadget)
+    {
+        pickupList.Add(gadget);
+    }
+
+    public void RemoveFromPickupList(Gadget gadget)
+    {
+        pickupList.Remove(gadget);
+    }
+
+    public bool CanPickup()
+    {
+        return !currentGadget;
     }
 }
