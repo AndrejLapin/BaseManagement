@@ -1351,7 +1351,7 @@ MonoBehaviour:
     value: 1.48
   softKnee:
     overrideState: 1
-    value: 0.464
+    value: 0.764
   clamp:
     overrideState: 1
     value: 65472
